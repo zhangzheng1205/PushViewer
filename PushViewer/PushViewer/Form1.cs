@@ -13,9 +13,9 @@ namespace PushViewer
 {
     public partial class Form1 : Form
     {
-        private Boolean power_consumption = false, beacon = false;
-        private string minor_red, minor_green, minor_blue;
-        private Boolean red = false, green = false, blue = false;
+        private Boolean power_consumption = false, beacon = false; // CheckedListBoxで機能を選択しているかどうか
+        private string minor_red, minor_green, minor_blue; // ComboBoxで指定しているユーザのID
+        private Boolean red = false, green = false, blue = false; // ComboBoxでBeaconを身に着けたユーザを指定しているかどうか
 
         SqlQuery sq;
 
@@ -28,14 +28,14 @@ namespace PushViewer
         {
             sq = new SqlQuery();
 
-            #region CheckedListBox
+            #region CheckedListBoxの初期設定
             for (int i = 0; i < checkedListBox.Items.Count; i++)
             {
                 checkedListBox.SetItemChecked(i, true);
             }
             #endregion
 
-            #region ComboBox
+            #region ComboBoxの初期設定
             try
             {
                 string query = sq.GetMinorList();
@@ -59,30 +59,37 @@ namespace PushViewer
             }
             #endregion
 
-            #region timer
+            #region timerの初期設定
             timer.Interval = 2500; // 2.5秒ごとに更新
             timer.Enabled = false;
             #endregion
         }
 
+        #region 赤のユーザのIDを変更したとき
         private void Red_TextChanged(object sender, EventArgs e)
         {
             minor_red = Red.Text;
             red = true;
         }
+        #endregion
 
+        #region 緑のユーザのIDを変更したとき
         private void Green_TextChanged(object sender, EventArgs e)
         {
             minor_green = Green.Text;
             green = true;
         }
+        #endregion
 
+        #region 青のユーザのIDを変更したとき
         private void Blue_TextChanged(object sender, EventArgs e)
         {
             minor_blue = Blue.Text;
             blue = true;
         }
+        #endregion
 
+        #region StartButtonを押したとき
         private void StartButton_Click(object sender, EventArgs e)
         {
             #region 機能選択
@@ -116,14 +123,18 @@ namespace PushViewer
             }
             timer.Enabled = true;
         }
+        #endregion
 
+        #region StopButtonを押したとき
         private void StopButton_Click(object sender, EventArgs e)
         {
             timer.Enabled = false;
             changeText(" ");
             changeOvalVisible(false);
         }
+        #endregion
 
+        #region ApplianceのTextBoxのTextを一気に変更
         private void changeText(string text)
         {
             Microwave.Text = text;
@@ -136,10 +147,12 @@ namespace PushViewer
             IsobeDesk.Text = text;
             IbarakiDesk.Text = text;
         }
+        #endregion
 
+        #region Ovalを可視化するかどうかを一気に変更
         private void changeOvalVisible(Boolean oval_visible)
         {
-            if (red)
+            if (red) // 赤のユーザのIDが指定されているとき
             {
                 MicrowaveRed.Visible = oval_visible;
                 IshidaRed.Visible = oval_visible;
@@ -152,7 +165,7 @@ namespace PushViewer
                 IbarakiRed.Visible = oval_visible;
             }
 
-            if (green)
+            if (green) // 緑のユーザのIDが指定されているとき
             {
                 MicrowaveGreen.Visible = oval_visible;
                 IshidaGreen.Visible = oval_visible;
@@ -165,7 +178,7 @@ namespace PushViewer
                 IbarakiGreen.Visible = oval_visible;
             }
             
-            if (blue)
+            if (blue) // 青のユーザのIDが指定されているとき
             {
                 MicrowaveBlue.Visible = oval_visible;
                 IshidaBlue.Visible = oval_visible;
@@ -178,7 +191,9 @@ namespace PushViewer
                 IbarakiBlue.Visible = oval_visible;
             } 
         }
-        
+        #endregion
+
+        #region 一定時間（timer.Interval）経過するごとに実行
         private void timer1_Tick(object sender, EventArgs e)
         {
             if (power_consumption)
@@ -190,7 +205,9 @@ namespace PushViewer
                 UpdateBeacon();
             }
         }
+        #endregion
 
+        #region Applianceの消費電力の表示を更新
         private void UpdatePowerConsumption()
         {
             #region 電子レンジの消費電力
@@ -238,7 +255,9 @@ namespace PushViewer
             IbarakiDesk.Text = ExecutePowerConsumpQuery(IbarakiDesk_ApplianceID) + "W";
             #endregion
         }
+        #endregion
 
+        #region 各Applianceの消費電力を求めるクエリを実行
         private string ExecutePowerConsumpQuery(string ApplianceID)
         {
             string PC = "-";
@@ -263,7 +282,9 @@ namespace PushViewer
             }
             return PC;
         }
+        #endregion
 
+        #region 各LocationのBeacon受信回数を更新
         private void UpdateBeacon()
         {
             int diameter = 0;
@@ -438,7 +459,9 @@ namespace PushViewer
             }
             #endregion            
         }
+        #endregion
 
+        #region 各LocationのBeacon受信回数を求めるクエリを実行
         private int ExecuteBeaconQuery(string minor, string address)
         {
             int count = 0;
@@ -463,5 +486,6 @@ namespace PushViewer
             }
             return count;
         }
+        #endregion
     }
 }
